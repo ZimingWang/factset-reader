@@ -81,13 +81,13 @@ func (sfr *FactsetReader) getLastVersion(files []os.FileInfo, searchedFileName s
 			continue
 		}
 
-		fullVersion := sfr.getFullVersion(name)
-		minorVersion, errMin := sfr.getMajorVersion(fullVersion)
-		majorVersion, errMaj := sfr.getMinorVersion(fullVersion)
-
-		if errMin != nil || errMaj != nil {
+		fullVersion, err := sfr.getFullVersion(name)
+		if err != nil {
 			continue
 		}
+
+		majorVersion, _ := sfr.getMajorVersion(fullVersion)
+		minorVersion, _ := sfr.getMinorVersion(fullVersion)
 
 		if (majorVersion > foundFile.majorVersion) ||
 			(majorVersion == foundFile.majorVersion && minorVersion > foundFile.minorVersion) {
@@ -129,23 +129,31 @@ func (sfr *FactsetReader) unzip(archive string, name string, dest string) error 
 	return nil
 }
 
-func (sfr *FactsetReader) getFullVersion(filename string) string {
+func (sfr *FactsetReader) getFullVersion(filename string) (string, error) {
 	regex := regexp.MustCompile("v[0-9]+_full_[0-9]+\\.zip$")
+
+	foundMatches := regex.FindStringSubmatch(filename)
+	if foundMatches == nil {
+		return "", errors.New("The full version is missing or not correctly specified!")
+	}
+	if len(foundMatches) > 1 {
+		return "", errors.New("More than 1 full version found!")
+	}
 
 	versionWithExt := regex.FindStringSubmatch(filename)[0]
 	fullVersion := strings.TrimSuffix(versionWithExt, ".zip")
 
-	return fullVersion
+	return fullVersion, nil
 }
 
 func (sfr *FactsetReader) getMajorVersion(fullVersion string) (int, error) {
 	regex := regexp.MustCompile("^v[0-9]+")
 	foundMatches := regex.FindStringSubmatch(fullVersion)
 	if foundMatches == nil {
-		return -1, errors.New("No major version found!")
+		return -1, errors.New("The major version is missing or not correctly specified!")
 	}
 	if len(foundMatches) > 1 {
-		return -1, errors.New("More then 1 major version found!")
+		return -1, errors.New("More than 1 major version found!")
 	}
 	majorVersion, _ := strconv.Atoi(strings.TrimPrefix(foundMatches[0], "v"))
 	return majorVersion, nil
@@ -155,10 +163,10 @@ func (sfr *FactsetReader) getMinorVersion(fullVersion string) (int, error) {
 	regex := regexp.MustCompile("_[0-9]+$")
 	foundMatches := regex.FindStringSubmatch(fullVersion)
 	if foundMatches == nil {
-		return -1, errors.New("No minor version found!")
+		return -1, errors.New("The minor version is missing or not correctly specified!")
 	}
 	if len(foundMatches) > 1 {
-		return -1, errors.New("More then 1 minor version found!")
+		return -1, errors.New("More than 1 minor version found!")
 	}
 	minorVersion, _ := strconv.Atoi(strings.TrimPrefix(foundMatches[0], "_"))
 	return minorVersion, nil

@@ -46,7 +46,7 @@ func TestFactsetReader_GetLastVersion(t *testing.T) {
 	for _, tc := range tcs {
 		lastVers, err := fsReader.getLastVersion(tc.files, tc.res)
 		as.NoError(err)
-		as.Equal(lastVers, tc.expected)
+		as.Equal(tc.expected, lastVers)
 	}
 }
 
@@ -84,7 +84,7 @@ func TestFactsetReader_GetLastVersion_ConversionError(t *testing.T) {
 
 	fim := []fileInfoMock{
 		{
-			name: "edm_premium_v1_full_9823372036854775808.zip",
+			name: "edm_premium_v1_full_noMinorVersion.zip",
 		},
 	}
 
@@ -101,8 +101,9 @@ func TestFactsetReader_GetLastVersion_ConversionError(t *testing.T) {
 		files: fis,
 	}
 
-	_, err := fsReader.getLastVersion(tcs.files, tcs.res)
-	as.Error(err)
+	lastVers, err := fsReader.getLastVersion(tcs.files, tcs.res)
+	as.NoError(err)
+	as.Equal(lastVers, "")
 }
 
 func TestFactsetReader_Unzip(t *testing.T) {
@@ -260,7 +261,7 @@ func TestFactsetReader_Read_ReadDirErr(t *testing.T) {
 	fsReader := FactsetReader{client: &sftpClient}
 
 	factsetRes := factsetResource{
-		archive:  "test/edm_premium_full",
+		archive:  "test/edm_premium",
 		fileName: "edm_security_entity_map.txt",
 	}
 	dest := path.Join(testFolder, dataFolder)
@@ -272,7 +273,7 @@ func TestFactsetReader_Read_DownloadError(t *testing.T) {
 	as := assert.New(t)
 
 	sftpClient := sftpClientMock{
-		readDirMock: getReadDirMock([]string{"edm_premium_full_1532.zip", "edm_premium_full_1522.zip"}),
+		readDirMock: getReadDirMock([]string{"edm_premium_v1_full_1532.zip", "edm_premium_v1_full_1522.zip"}),
 		downloadMock: func(fileName string, dest string) error {
 			return fmt.Errorf("Could not download file [%s] from [%s]", fileName, dest)
 		},
@@ -281,7 +282,7 @@ func TestFactsetReader_Read_DownloadError(t *testing.T) {
 	fsReader := FactsetReader{client: &sftpClient}
 
 	factsetRes := factsetResource{
-		archive:  "test/edm_premium_full",
+		archive:  "test/edm_premium",
 		fileName: "edm_security_entity_map.txt",
 	}
 	dest := path.Join(testFolder, dataFolder)
@@ -293,7 +294,7 @@ func TestFactsetReader_Read_GetLastVersionError(t *testing.T) {
 	as := assert.New(t)
 
 	sftpClient := sftpClientMock{
-		readDirMock: getReadDirMock([]string{"edm_premium_full_9823372036854775808.zip", "edm_premium_full_1522.zip"}),
+		readDirMock: getReadDirMock([]string{"edm_premium_v1_full_9823372036854775808.zip", "edm_premium_v1_full_1522.zip"}),
 		downloadMock: func(fileName string, dest string) error {
 			return nil
 		},
@@ -302,7 +303,7 @@ func TestFactsetReader_Read_GetLastVersionError(t *testing.T) {
 	fsReader := FactsetReader{client: &sftpClient}
 
 	factsetRes := factsetResource{
-		archive:  "test/edm_premium_full",
+		archive:  "test/edm_premium",
 		fileName: "edm_security_entity_map.txt",
 	}
 	dest := path.Join(testFolder, dataFolder)
