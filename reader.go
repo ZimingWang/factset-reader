@@ -10,6 +10,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"strconv"
+	"errors"
 )
 
 type Reader interface {
@@ -81,10 +82,10 @@ func (sfr *FactsetReader) getLastVersion(files []os.FileInfo, searchedFileName s
 		}
 
 		fullVersion := sfr.getFullVersion(name)
-		minorVersion := sfr.getMajorVersion(fullVersion)
-		majorVersion := sfr.getMinorVersion(fullVersion)
+		minorVersion, errMin := sfr.getMajorVersion(fullVersion)
+		majorVersion, errMaj := sfr.getMinorVersion(fullVersion)
 
-		if majorVersion == nil || minorVersion == nil {
+		if errMin != nil || errMaj != nil {
 			continue
 		}
 
@@ -137,22 +138,28 @@ func (sfr *FactsetReader) getFullVersion(filename string) string {
 	return fullVersion
 }
 
-func (sfr *FactsetReader) getMajorVersion(fullVersion string) int {
+func (sfr *FactsetReader) getMajorVersion(fullVersion string) (int, error) {
 	regex := regexp.MustCompile("^v[0-9]+")
-	majorVersionFull := regex.FindStringSubmatch(fullVersion)[0]
-	if majorVersionFull == nil {
-		return nil
+	foundMatches := regex.FindStringSubmatch(fullVersion)
+	if foundMatches == nil {
+		return -1, errors.New("No major version found!")
 	}
-	majorVersion, _ := strconv.Atoi(strings.TrimPrefix(majorVersionFull, "v"))
-	return majorVersion
+	if len(foundMatches) > 1 {
+		return -1, errors.New("More then 1 major version found!")
+	}
+	majorVersion, _ := strconv.Atoi(strings.TrimPrefix(foundMatches[0], "v"))
+	return majorVersion, nil
 }
 
-func (sfr *FactsetReader) getMinorVersion(fullVersion string) int {
+func (sfr *FactsetReader) getMinorVersion(fullVersion string) (int, error) {
 	regex := regexp.MustCompile("_[0-9]+$")
-	minorVersionFull := regex.FindStringSubmatch(fullVersion)[0]
-	if minorVersionFull == nil {
-		return nil
+	foundMatches := regex.FindStringSubmatch(fullVersion)
+	if foundMatches == nil {
+		return -1, errors.New("No minor version found!")
 	}
-	minorVersion, _ := strconv.Atoi(strings.TrimPrefix(minorVersionFull, "_"))
-	return minorVersion
+	if len(foundMatches) > 1 {
+		return -1, errors.New("More then 1 minor version found!")
+	}
+	minorVersion, _ := strconv.Atoi(strings.TrimPrefix(foundMatches[0], "_"))
+	return minorVersion, nil
 }

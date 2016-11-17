@@ -19,10 +19,10 @@ func TestFactsetReader_GetLastVersion(t *testing.T) {
 
 	fim := []fileInfoMock{
 		{
-			name: "edm_premium_full_1532.zip",
+			name: "edm_premium_v2_full_1532.zip",
 		},
 		{
-			name: "edm_premium_full_1547.zip",
+			name: "edm_premium_v1_full_1547.zip",
 		},
 	}
 
@@ -37,9 +37,9 @@ func TestFactsetReader_GetLastVersion(t *testing.T) {
 		expected string
 	}{
 		{
-			res:      "edm_premium_full",
+			res:      "edm_premium",
 			files:    fis,
-			expected: "edm_premium_full_1547.zip",
+			expected: "edm_premium_v2_full_1532.zip",
 		},
 	}
 
@@ -56,7 +56,7 @@ func TestFactsetReader_GetLastVersion_NoMatch(t *testing.T) {
 
 	fim := []fileInfoMock{
 		{
-			name: "edm_premium_full_1547.zip",
+			name: "edm_premium_v1_full_1547.zip",
 		},
 	}
 
@@ -69,7 +69,7 @@ func TestFactsetReader_GetLastVersion_NoMatch(t *testing.T) {
 		res   string
 		files []os.FileInfo
 	}{
-		res:   "sym_premium_full",
+		res:   "sym_premium",
 		files: fis,
 	}
 
@@ -84,7 +84,7 @@ func TestFactsetReader_GetLastVersion_ConversionError(t *testing.T) {
 
 	fim := []fileInfoMock{
 		{
-			name: "edm_premium_full_9823372036854775808.zip",
+			name: "edm_premium_v1_full_9823372036854775808.zip",
 		},
 	}
 
@@ -97,7 +97,7 @@ func TestFactsetReader_GetLastVersion_ConversionError(t *testing.T) {
 		res   string
 		files []os.FileInfo
 	}{
-		res:   "edm_premium_full",
+		res:   "edm_premium",
 		files: fis,
 	}
 
@@ -115,7 +115,7 @@ func TestFactsetReader_Unzip(t *testing.T) {
 		name    string
 		dest    string
 	}{
-		archive: "edm_premium_full_1532.zip",
+		archive: "edm_premium_v1_full_1532.zip",
 		name:    "edm_security_entity_map.txt",
 		dest:    testFolder,
 	}
@@ -141,7 +141,7 @@ func TestFactsetReader_Unzip_ReaderError(t *testing.T) {
 		name    string
 		dest    string
 	}{
-		archive: "sample_full_1532.zip",
+		archive: "sample_v1_full_1532.zip",
 		name:    "sample_entity_map.txt",
 		dest:    testFolder,
 	}
@@ -160,7 +160,7 @@ func TestFactsetReader_Unzip_NoMatch(t *testing.T) {
 		name    string
 		dest    string
 	}{
-		archive: "edm_premium_full_1532.zip",
+		archive: "edm_premium_v1_full_1532.zip",
 		name:    "sample_map.txt",
 		dest:    testFolder,
 	}
@@ -195,7 +195,7 @@ func TestFactsetReader_Download(t *testing.T) {
 		fileName string
 	}{
 		path:     testFolder,
-		fileName: "edm_premium_full_1532.zip",
+		fileName: "edm_premium_v1_full_1532.zip",
 	}
 
 	err := fsReader.download(tc.path, tc.fileName, path.Join(testFolder, dataFolder))
@@ -211,7 +211,7 @@ func TestFactsetReader_ReadRes(t *testing.T) {
 	as := assert.New(t)
 
 	sftpClient := sftpClientMock{
-		readDirMock: getReadDirMock([]string{"edm_premium_full_1532.zip", "edm_premium_full_1522.zip"}),
+		readDirMock: getReadDirMock([]string{"edm_premium_v1_full_1532.zip", "edm_premium_v1_full_1522.zip"}),
 		downloadMock: func(fileName string, dest string) error {
 			content, err := ioutil.ReadFile(fileName)
 			if err != nil {
@@ -230,13 +230,13 @@ func TestFactsetReader_ReadRes(t *testing.T) {
 	fsReader := FactsetReader{client: &sftpClient}
 
 	factsetRes := factsetResource{
-		archive:  "test/edm_premium_full",
+		archive:  "test/edm_premium",
 		fileName: "edm_security_entity_map.txt",
 	}
 	dest := path.Join(testFolder, dataFolder)
 	f, err := fsReader.Read(factsetRes, dest)
 	as.NoError(err)
-	as.Equal(f, "edm_premium_full_1532.zip")
+	as.Equal(f, "edm_premium_v1_full_1532.zip")
 
 	file, err := os.Open(path.Join(dest, factsetRes.fileName))
 	as.NoError(err)
