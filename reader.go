@@ -6,10 +6,10 @@ import (
 	"os"
 	"path"
 	"regexp"
-	"strconv"
 	"strings"
 
 	log "github.com/Sirupsen/logrus"
+	"strconv"
 )
 
 type Reader interface {
@@ -67,34 +67,35 @@ func (sfr *FactsetReader) download(filePath string, fileName string, dest string
 	return nil
 }
 
-func (sfr *FactsetReader) getLastVersion(files []os.FileInfo, searchedRes string) (string, error) {
-	recFile := &struct {
-		name string
-		vers int
+func (sfr *FactsetReader) getLastVersion(files []os.FileInfo, searchedFileName string) (string, error) {
+	foundFile := &struct {
+		name         string
+		majorVersion int
+		minorVersion int
 	}{}
 
-	r := regexp.MustCompile("[0-9]+\\.zip$")
 	for _, file := range files {
 		name := file.Name()
-		if !strings.Contains(name, searchedRes) {
+		if !strings.Contains(name, searchedFileName) {
 			continue
 		}
-		s := r.FindStringSubmatch(name)[0]
 
-		v, err := strconv.Atoi(strings.TrimSuffix(s, ".zip"))
-		if err != nil {
-			return "", err
+		fullVersion := sfr.getFullVersion(name)
+		minorVersion := sfr.getMajorVersion(fullVersion)
+		majorVersion := sfr.getMinorVersion(fullVersion)
+
+		if majorVersion == nil || minorVersion == nil {
+			continue
 		}
 
-		if recFile.name == "" {
-			recFile.name = name
-			recFile.vers = v
-		} else if v > recFile.vers {
-			recFile.name = name
-			recFile.vers = v
+		if (majorVersion > foundFile.majorVersion) ||
+			(majorVersion == foundFile.majorVersion && minorVersion > foundFile.minorVersion) {
+			foundFile.name = name
+			foundFile.majorVersion = majorVersion
+			foundFile.minorVersion = minorVersion
 		}
 	}
-	return recFile.name, nil
+	return foundFile.name, nil
 }
 
 func (sfr *FactsetReader) unzip(archive string, name string, dest string) error {
@@ -125,4 +126,33 @@ func (sfr *FactsetReader) unzip(archive string, name string, dest string) error 
 
 	}
 	return nil
+}
+
+func (sfr *FactsetReader) getFullVersion(filename string) string {
+	regex := regexp.MustCompile("v[0-9]+_full_[0-9]+\\.zip$")
+
+	versionWithExt := regex.FindStringSubmatch(filename)[0]
+	fullVersion := strings.TrimSuffix(versionWithExt, ".zip")
+
+	return fullVersion
+}
+
+func (sfr *FactsetReader) getMajorVersion(fullVersion string) int {
+	regex := regexp.MustCompile("^v[0-9]+")
+	majorVersionFull := regex.FindStringSubmatch(fullVersion)[0]
+	if majorVersionFull == nil {
+		return nil
+	}
+	majorVersion, _ := strconv.Atoi(strings.TrimPrefix(majorVersionFull, "v"))
+	return majorVersion
+}
+
+func (sfr *FactsetReader) getMinorVersion(fullVersion string) int {
+	regex := regexp.MustCompile("_[0-9]+$")
+	minorVersionFull := regex.FindStringSubmatch(fullVersion)[0]
+	if minorVersionFull == nil {
+		return nil
+	}
+	minorVersion, _ := strconv.Atoi(strings.TrimPrefix(minorVersionFull, "_"))
+	return minorVersion
 }
