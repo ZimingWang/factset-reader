@@ -2,7 +2,6 @@ package main
 
 import (
 	"path"
-	"strings"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
@@ -37,15 +36,7 @@ func (s3w *S3Writer) gets3ResName(res string) string {
 		return res
 	}
 
-	resFilePath := "financial-instruments/" + time.Now().Format("2006-01-02") + "/"
-	fileData := strings.Split(res, ".")
-	if len(fileData) <= 1 {
-		resFilePath += fileData[0]
-	} else {
-		ext := fileData[len(fileData)-1]
-		name := strings.TrimSuffix(res, "."+ext)
-		resFilePath += name + ext
-	}
+	resFilePath := "financial-instruments/" + time.Now().Format("2006-01-02") + "/" + res
 
 	return resFilePath
 }
