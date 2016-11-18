@@ -81,13 +81,13 @@ func (sfr *FactsetReader) getLastVersion(files []os.FileInfo, searchedFileName s
 			continue
 		}
 
-		fullVersion, err := sfr.getFullVersion(name)
+		fullVersion, err := GetFullVersion(name)
 		if err != nil {
 			continue
 		}
 
-		majorVersion, _ := sfr.getMajorVersion(fullVersion)
-		minorVersion, _ := sfr.getMinorVersion(fullVersion)
+		majorVersion, _ := getMajorVersion(fullVersion)
+		minorVersion, _ := getMinorVersion(fullVersion)
 
 		if (majorVersion > foundFile.majorVersion) ||
 			(majorVersion == foundFile.majorVersion && minorVersion > foundFile.minorVersion) {
@@ -129,12 +129,12 @@ func (sfr *FactsetReader) unzip(archive string, name string, dest string) error 
 	return nil
 }
 
-func (sfr *FactsetReader) getFullVersion(filename string) (string, error) {
-	regex := regexp.MustCompile("v[0-9]+_full_[0-9]+\\.zip$")
+func GetFullVersion(filename string) (string, error) {
+	regex := regexp.MustCompile("v[0-9]+_full_[0-9]+\\.zip|txt$")
 
 	foundMatches := regex.FindStringSubmatch(filename)
 	if foundMatches == nil {
-		return "", errors.New("The full version is missing or not correctly specified!")
+		return "", errors.New("The full version is missing or not correctly specified! Filename was " + filename)
 	}
 	if len(foundMatches) > 1 {
 		return "", errors.New("More than 1 full version found!")
@@ -146,7 +146,7 @@ func (sfr *FactsetReader) getFullVersion(filename string) (string, error) {
 	return fullVersion, nil
 }
 
-func (sfr *FactsetReader) getMajorVersion(fullVersion string) (int, error) {
+func getMajorVersion(fullVersion string) (int, error) {
 	regex := regexp.MustCompile("^v[0-9]+")
 	foundMatches := regex.FindStringSubmatch(fullVersion)
 	if foundMatches == nil {
@@ -159,7 +159,7 @@ func (sfr *FactsetReader) getMajorVersion(fullVersion string) (int, error) {
 	return majorVersion, nil
 }
 
-func (sfr *FactsetReader) getMinorVersion(fullVersion string) (int, error) {
+func getMinorVersion(fullVersion string) (int, error) {
 	regex := regexp.MustCompile("_[0-9]+$")
 	foundMatches := regex.FindStringSubmatch(fullVersion)
 	if foundMatches == nil {
