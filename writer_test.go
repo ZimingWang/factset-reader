@@ -30,7 +30,7 @@ func TestS3Writer_Gets3ResName(t *testing.T) {
 	wr := S3Writer{}
 
 	for _, tc := range tcs {
-		r := wr.gets3ResName(tc.resName)
+		r := wr.getS3ResFilePath(tc.resName)
 		as.Equal(r, tc.expected)
 	}
 }
@@ -50,7 +50,7 @@ func TestS3Writer_Gets3ResName_NoExtension(t *testing.T) {
 	wr := S3Writer{}
 
 	for _, tc := range tcs {
-		r := wr.gets3ResName(tc.resName)
+		r := wr.getS3ResFilePath(tc.resName)
 		as.Equal(r, tc.expected)
 	}
 }
@@ -70,7 +70,7 @@ func TestS3Writer_Gets3ResName_EmptyFilename(t *testing.T) {
 	wr := S3Writer{}
 
 	for _, tc := range tcs {
-		r := wr.gets3ResName(tc.resName)
+		r := wr.getS3ResFilePath(tc.resName)
 		as.Equal(r, tc.expected)
 	}
 }
@@ -110,7 +110,7 @@ func TestS3Writer_Write(t *testing.T) {
 		},
 	}
 	wr := S3Writer{s3Client: &httpS3Client}
-	err := wr.Write(testFolder, "edm_security_entity_map_test.txt")
+	err := wr.Write(testFolder, "edm_security_entity_map_test.txt","edm_security_entity_map_test_v1_full_2145.txt")
 	as.NoError(err)
 
 	dbFile, err := os.Open(testFolder + "/edm_security_entity_map_test.txt")
@@ -131,7 +131,7 @@ func TestS3Writer_Write_Error(t *testing.T) {
 		},
 	}
 	wr := S3Writer{s3Client: &httpS3Client}
-	err := wr.Write(testFolder, "edm_security_entity_map_test.txt")
+	err := wr.Write(testFolder, "edm_security_entity_map_test.txt","edm_security_entity_map_test_v1_full_2115.txt")
 	as.NotNil(err)
 	as.Error(err)
 }
