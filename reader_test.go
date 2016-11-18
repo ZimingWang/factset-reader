@@ -311,6 +311,174 @@ func TestFactsetReader_Read_GetLastVersionError(t *testing.T) {
 	as.Error(err)
 }
 
+func TestFactsetReader_GetFullVersion(t *testing.T) {
+	as := assert.New(t)
+
+	tcs := []struct {
+		name            string
+		expectedVersion string
+	}{
+		{
+			name:      "abc_v1_full_2145.zip",
+			expectedVersion:    "v1_full_2145",
+		},
+		{
+			name:      "abc_v2_full_2445.zip",
+			expectedVersion:    "v2_full_2445",
+		},
+	}
+
+	for _, tc := range tcs {
+		resultedVersion, err := GetFullVersion(tc.name)
+		as.NoError(err)
+		as.Equal(tc.expectedVersion, resultedVersion)
+	}
+}
+
+func TestFactsetReader_GetFullVersionError(t *testing.T) {
+	as := assert.New(t)
+
+	tcs := []struct {
+		name            string
+		expectedVersion string
+	}{
+		{
+			name:      "abc_v1_full.zip",
+			expectedVersion:    "",
+		},
+		{
+			name:      "abc_full_2445.zip",
+			expectedVersion:    "",
+		},
+		{
+			name:      "abc_v1_2345.zip",
+			expectedVersion:    "",
+		},
+		{
+			name:      "abc.zip",
+			expectedVersion:    "",
+		},
+	}
+
+	for _, tc := range tcs {
+		resultedVersion, err := GetFullVersion(tc.name)
+		as.Error(err)
+		as.Equal(tc.expectedVersion, resultedVersion)
+	}
+}
+
+func TestFactsetReader_getMajorVersion(t *testing.T) {
+	as := assert.New(t)
+
+	tcs := []struct {
+		name            string
+		expectedVersion int
+	}{
+		{
+			name:      "v1_full_2145",
+			expectedVersion:    1,
+		},
+		{
+			name:      "v2_full_2445",
+			expectedVersion:    2,
+		},
+		{
+			name:      "v23_full_2445",
+			expectedVersion:    23,
+		},
+	}
+
+	for _, tc := range tcs {
+		resultedVersion, err := getMajorVersion(tc.name)
+		as.NoError(err)
+		as.Equal(tc.expectedVersion, resultedVersion)
+	}
+}
+
+func TestFactsetReader_getMajorVersionError(t *testing.T) {
+	as := assert.New(t)
+
+	tcs := []struct {
+		name            string
+		expectedVersion int
+	}{
+		{
+			name:      "full_2233",
+			expectedVersion:    -1,
+		},
+		{
+			name:      "notAMahorVersion_full_2233",
+			expectedVersion:    -1,
+		},
+		{
+			name:      "vABC_full_2233",
+			expectedVersion:    -1,
+		},
+		{
+			name:      "",
+			expectedVersion:    -1,
+		},
+	}
+
+	for _, tc := range tcs {
+		resultedVersion, err := getMajorVersion(tc.name)
+		as.Error(err)
+		as.Equal(tc.expectedVersion, resultedVersion)
+	}
+}
+
+func TestFactsetReader_getMinorVersion(t *testing.T) {
+	as := assert.New(t)
+
+	tcs := []struct {
+		name            string
+		expectedVersion int
+	}{
+		{
+			name:      "v1_full_2145",
+			expectedVersion:    2145,
+		},
+		{
+			name:      "v2_full_2445",
+			expectedVersion:    2445,
+		},
+	}
+
+	for _, tc := range tcs {
+		resultedVersion, err := getMinorVersion(tc.name)
+		as.NoError(err)
+		as.Equal(tc.expectedVersion, resultedVersion)
+	}
+}
+
+func TestFactsetReader_getMinorVersionError(t *testing.T) {
+	as := assert.New(t)
+
+	tcs := []struct {
+		name            string
+		expectedVersion int
+	}{
+		{
+			name:      "v1_full",
+			expectedVersion:    -1,
+		},
+		{
+			name:      "full_notAMinorVersion",
+			expectedVersion:    -1,
+		},
+		{
+			name:      "",
+			expectedVersion:    -1,
+		},
+	}
+
+	for _, tc := range tcs {
+		resultedVersion, err := getMinorVersion(tc.name)
+		as.Error(err)
+		as.Equal(tc.expectedVersion, resultedVersion)
+	}
+}
+
 func getReadDirMock(files []string) func(dir string) ([]os.FileInfo, error) {
 	filesInfo := []fileInfoMock{}
 	for _, file := range files {
