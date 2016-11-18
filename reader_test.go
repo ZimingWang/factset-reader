@@ -319,12 +319,12 @@ func TestFactsetReader_GetFullVersion(t *testing.T) {
 		expectedVersion string
 	}{
 		{
-			name:      "abc_v1_full_2145.zip",
-			expectedVersion:    "v1_full_2145",
+			name:            "abc_v1_full_2145.zip",
+			expectedVersion: "v1_full_2145",
 		},
 		{
-			name:      "abc_v2_full_2445.zip",
-			expectedVersion:    "v2_full_2445",
+			name:            "abc_v2_full_2445.zip",
+			expectedVersion: "v2_full_2445",
 		},
 	}
 
@@ -343,20 +343,20 @@ func TestFactsetReader_GetFullVersionError(t *testing.T) {
 		expectedVersion string
 	}{
 		{
-			name:      "abc_v1_full.zip",
-			expectedVersion:    "",
+			name:            "abc_v1_full.zip",
+			expectedVersion: "",
 		},
 		{
-			name:      "abc_full_2445.zip",
-			expectedVersion:    "",
+			name:            "abc_full_2445.zip",
+			expectedVersion: "",
 		},
 		{
-			name:      "abc_v1_2345.zip",
-			expectedVersion:    "",
+			name:            "abc_v1_2345.zip",
+			expectedVersion: "",
 		},
 		{
-			name:      "abc.zip",
-			expectedVersion:    "",
+			name:            "abc.zip",
+			expectedVersion: "",
 		},
 	}
 
@@ -375,16 +375,16 @@ func TestFactsetReader_getMajorVersion(t *testing.T) {
 		expectedVersion int
 	}{
 		{
-			name:      "v1_full_2145",
-			expectedVersion:    1,
+			name:            "v1_full_2145",
+			expectedVersion: 1,
 		},
 		{
-			name:      "v2_full_2445",
-			expectedVersion:    2,
+			name:            "v2_full_2445",
+			expectedVersion: 2,
 		},
 		{
-			name:      "v23_full_2445",
-			expectedVersion:    23,
+			name:            "v23_full_2445",
+			expectedVersion: 23,
 		},
 	}
 
@@ -403,20 +403,20 @@ func TestFactsetReader_getMajorVersionError(t *testing.T) {
 		expectedVersion int
 	}{
 		{
-			name:      "full_2233",
-			expectedVersion:    -1,
+			name:            "full_2233",
+			expectedVersion: -1,
 		},
 		{
-			name:      "notAMahorVersion_full_2233",
-			expectedVersion:    -1,
+			name:            "notAMahorVersion_full_2233",
+			expectedVersion: -1,
 		},
 		{
-			name:      "vABC_full_2233",
-			expectedVersion:    -1,
+			name:            "vABC_full_2233",
+			expectedVersion: -1,
 		},
 		{
-			name:      "",
-			expectedVersion:    -1,
+			name:            "",
+			expectedVersion: -1,
 		},
 	}
 
@@ -435,12 +435,12 @@ func TestFactsetReader_getMinorVersion(t *testing.T) {
 		expectedVersion int
 	}{
 		{
-			name:      "v1_full_2145",
-			expectedVersion:    2145,
+			name:            "v1_full_2145",
+			expectedVersion: 2145,
 		},
 		{
-			name:      "v2_full_2445",
-			expectedVersion:    2445,
+			name:            "v2_full_2445",
+			expectedVersion: 2445,
 		},
 	}
 
@@ -459,16 +459,16 @@ func TestFactsetReader_getMinorVersionError(t *testing.T) {
 		expectedVersion int
 	}{
 		{
-			name:      "v1_full",
-			expectedVersion:    -1,
+			name:            "v1_full",
+			expectedVersion: -1,
 		},
 		{
-			name:      "full_notAMinorVersion",
-			expectedVersion:    -1,
+			name:            "full_notAMinorVersion",
+			expectedVersion: -1,
 		},
 		{
-			name:      "",
-			expectedVersion:    -1,
+			name:            "",
+			expectedVersion: -1,
 		},
 	}
 

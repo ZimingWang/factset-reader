@@ -8,8 +8,8 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
-	"strings"
 	"path/filepath"
+	"strings"
 )
 
 type service struct {

@@ -8,9 +8,9 @@ import (
 	"regexp"
 	"strings"
 
+	"errors"
 	log "github.com/Sirupsen/logrus"
 	"strconv"
-	"errors"
 )
 
 type Reader interface {

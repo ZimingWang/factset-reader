@@ -2,11 +2,11 @@ package main
 
 import (
 	"errors"
+	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"os"
 	"testing"
 	"time"
-	"github.com/stretchr/testify/assert"
 )
 
 const factsetS3BucketDirName = "financial-instruments"
@@ -23,7 +23,7 @@ func TestS3Writer_Gets3ResName(t *testing.T) {
 		},
 		{
 			resName:  "edm_premium_full_1532.zip.txt",
-			expected:  factsetS3BucketDirName + "/" + time.Now().Format("2006-01-02") + "/edm_premium_full_1532.zip.txt",
+			expected: factsetS3BucketDirName + "/" + time.Now().Format("2006-01-02") + "/edm_premium_full_1532.zip.txt",
 		},
 	}
 
@@ -43,7 +43,7 @@ func TestS3Writer_Gets3ResName_NoExtension(t *testing.T) {
 	}{
 		{
 			resName:  "edm_premium_full_1532",
-			expected:  factsetS3BucketDirName +"/"+ time.Now().Format("2006-01-02") + "/edm_premium_full_1532",
+			expected: factsetS3BucketDirName + "/" + time.Now().Format("2006-01-02") + "/edm_premium_full_1532",
 		},
 	}
 
@@ -85,8 +85,8 @@ func TestS3Writer_Write(t *testing.T) {
 				return 0, err
 			}
 
-			err = os.MkdirAll(factsetS3BucketDirName +"/"+ time.Now().Format("2006-01-02"), 0766)
-			if (err != nil ) {
+			err = os.MkdirAll(factsetS3BucketDirName+"/"+time.Now().Format("2006-01-02"), 0766)
+			if err != nil {
 				return 0, err
 			}
 			err = ioutil.WriteFile(objectName, file, 0766)
@@ -110,7 +110,7 @@ func TestS3Writer_Write(t *testing.T) {
 		},
 	}
 	wr := S3Writer{s3Client: &httpS3Client}
-	err := wr.Write(testFolder, "edm_security_entity_map_test.txt","edm_security_entity_map_test_v1_full_2145.txt")
+	err := wr.Write(testFolder, "edm_security_entity_map_test.txt", "edm_security_entity_map_test_v1_full_2145.txt")
 	as.NoError(err)
 
 	dbFile, err := os.Open(testFolder + "/edm_security_entity_map_test.txt")
@@ -131,7 +131,7 @@ func TestS3Writer_Write_Error(t *testing.T) {
 		},
 	}
 	wr := S3Writer{s3Client: &httpS3Client}
-	err := wr.Write(testFolder, "edm_security_entity_map_test.txt","edm_security_entity_map_test_v1_full_2115.txt")
+	err := wr.Write(testFolder, "edm_security_entity_map_test.txt", "edm_security_entity_map_test_v1_full_2115.txt")
 	as.NotNil(err)
 	as.Error(err)
 }
