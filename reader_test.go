@@ -74,7 +74,7 @@ func TestFactsetReader_GetLastVersion_NoMatch(t *testing.T) {
 	}
 
 	lastVers, err := fsReader.getLastVersion(tcs.files, tcs.res)
-	as.NoError(err)
+	as.Error(err)
 	as.Equal(lastVers, "")
 }
 
@@ -102,7 +102,7 @@ func TestFactsetReader_GetLastVersion_ConversionError(t *testing.T) {
 	}
 
 	lastVers, err := fsReader.getLastVersion(tcs.files, tcs.res)
-	as.NoError(err)
+	as.Error(err)
 	as.Equal(lastVers, "")
 }
 
