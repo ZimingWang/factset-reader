@@ -145,9 +145,7 @@ func GetFullVersion(filename string) (string, error) {
 		return "", errors.New("More than 1 full version found!")
 	}
 
-	versionWithExt := regex.FindStringSubmatch(filename)[0]
-	fullVersion := strings.TrimSuffix(versionWithExt, ".zip")
-
+	fullVersion := strings.TrimSuffix(foundMatches[0], ".zip")
 	return fullVersion, nil
 }
 
