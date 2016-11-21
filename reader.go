@@ -96,6 +96,11 @@ func (sfr *FactsetReader) getLastVersion(files []os.FileInfo, searchedFileName s
 			foundFile.minorVersion = minorVersion
 		}
 	}
+
+	if len(foundFile.name) == 0 {
+		return foundFile.name, errors.New("Could not find any last version file matching filename: " + searchedFileName)
+	}
+
 	return foundFile.name, nil
 }
 
