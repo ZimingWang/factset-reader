@@ -15,6 +15,7 @@ import (
 
 type Reader interface {
 	Read(fRes factsetResource, dest string) (string, error)
+	GetFullVersion(filename string) (string, error)
 	Close()
 }
 
@@ -81,13 +82,13 @@ func (sfr *FactsetReader) getLastVersion(files []os.FileInfo, searchedFileName s
 			continue
 		}
 
-		fullVersion, err := GetFullVersion(name)
+		fullVersion, err := sfr.GetFullVersion(name)
 		if err != nil {
 			continue
 		}
 
-		majorVersion, _ := getMajorVersion(fullVersion)
-		minorVersion, _ := getMinorVersion(fullVersion)
+		majorVersion, _ := sfr.getMajorVersion(fullVersion)
+		minorVersion, _ := sfr.getMinorVersion(fullVersion)
 
 		if (majorVersion > foundFile.majorVersion) ||
 			(majorVersion == foundFile.majorVersion && minorVersion > foundFile.minorVersion) {
@@ -134,7 +135,7 @@ func (sfr *FactsetReader) unzip(archive string, name string, dest string) error 
 	return nil
 }
 
-func GetFullVersion(filename string) (string, error) {
+func (sfr *FactsetReader) GetFullVersion(filename string) (string, error) {
 	regex := regexp.MustCompile("v[0-9]+_full_[0-9]+\\.zip|txt$")
 
 	foundMatches := regex.FindStringSubmatch(filename)
@@ -149,7 +150,7 @@ func GetFullVersion(filename string) (string, error) {
 	return fullVersion, nil
 }
 
-func getMajorVersion(fullVersion string) (int, error) {
+func (sfr *FactsetReader) getMajorVersion(fullVersion string) (int, error) {
 	regex := regexp.MustCompile("^v[0-9]+")
 	foundMatches := regex.FindStringSubmatch(fullVersion)
 	if foundMatches == nil {
@@ -162,7 +163,7 @@ func getMajorVersion(fullVersion string) (int, error) {
 	return majorVersion, nil
 }
 
-func getMinorVersion(fullVersion string) (int, error) {
+func (sfr *FactsetReader) getMinorVersion(fullVersion string) (int, error) {
 	regex := regexp.MustCompile("_[0-9]+$")
 	foundMatches := regex.FindStringSubmatch(fullVersion)
 	if foundMatches == nil {

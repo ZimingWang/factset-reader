@@ -57,7 +57,7 @@ func (s service) fetchResource(res factsetResource) error {
 		return err
 	}
 
-	fullVersion, err := GetFullVersion(fileName)
+	fullVersion, err := rd.GetFullVersion(fileName)
 	if err != nil {
 		return err
 	}

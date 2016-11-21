@@ -314,6 +314,8 @@ func TestFactsetReader_Read_GetLastVersionError(t *testing.T) {
 func TestFactsetReader_GetFullVersion(t *testing.T) {
 	as := assert.New(t)
 
+	fsReader := FactsetReader{}
+
 	tcs := []struct {
 		name            string
 		expectedVersion string
@@ -329,7 +331,7 @@ func TestFactsetReader_GetFullVersion(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		resultedVersion, err := GetFullVersion(tc.name)
+		resultedVersion, err := fsReader.GetFullVersion(tc.name)
 		as.NoError(err)
 		as.Equal(tc.expectedVersion, resultedVersion)
 	}
@@ -337,6 +339,8 @@ func TestFactsetReader_GetFullVersion(t *testing.T) {
 
 func TestFactsetReader_GetFullVersionError(t *testing.T) {
 	as := assert.New(t)
+
+	fsReader := FactsetReader{}
 
 	tcs := []struct {
 		name            string
@@ -361,7 +365,7 @@ func TestFactsetReader_GetFullVersionError(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		resultedVersion, err := GetFullVersion(tc.name)
+		resultedVersion, err := fsReader.GetFullVersion(tc.name)
 		as.Error(err)
 		as.Equal(tc.expectedVersion, resultedVersion)
 	}
@@ -369,6 +373,8 @@ func TestFactsetReader_GetFullVersionError(t *testing.T) {
 
 func TestFactsetReader_getMajorVersion(t *testing.T) {
 	as := assert.New(t)
+
+	fsReader := FactsetReader{}
 
 	tcs := []struct {
 		name            string
@@ -389,7 +395,7 @@ func TestFactsetReader_getMajorVersion(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		resultedVersion, err := getMajorVersion(tc.name)
+		resultedVersion, err := fsReader.getMajorVersion(tc.name)
 		as.NoError(err)
 		as.Equal(tc.expectedVersion, resultedVersion)
 	}
@@ -397,6 +403,8 @@ func TestFactsetReader_getMajorVersion(t *testing.T) {
 
 func TestFactsetReader_getMajorVersionError(t *testing.T) {
 	as := assert.New(t)
+
+	fsReader := FactsetReader{}
 
 	tcs := []struct {
 		name            string
@@ -421,7 +429,7 @@ func TestFactsetReader_getMajorVersionError(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		resultedVersion, err := getMajorVersion(tc.name)
+		resultedVersion, err := fsReader.getMajorVersion(tc.name)
 		as.Error(err)
 		as.Equal(tc.expectedVersion, resultedVersion)
 	}
@@ -429,6 +437,8 @@ func TestFactsetReader_getMajorVersionError(t *testing.T) {
 
 func TestFactsetReader_getMinorVersion(t *testing.T) {
 	as := assert.New(t)
+
+	fsReader := FactsetReader{}
 
 	tcs := []struct {
 		name            string
@@ -445,7 +455,7 @@ func TestFactsetReader_getMinorVersion(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		resultedVersion, err := getMinorVersion(tc.name)
+		resultedVersion, err := fsReader.getMinorVersion(tc.name)
 		as.NoError(err)
 		as.Equal(tc.expectedVersion, resultedVersion)
 	}
@@ -453,6 +463,8 @@ func TestFactsetReader_getMinorVersion(t *testing.T) {
 
 func TestFactsetReader_getMinorVersionError(t *testing.T) {
 	as := assert.New(t)
+
+	fsReader := FactsetReader{}
 
 	tcs := []struct {
 		name            string
@@ -473,7 +485,7 @@ func TestFactsetReader_getMinorVersionError(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		resultedVersion, err := getMinorVersion(tc.name)
+		resultedVersion, err := fsReader.getMinorVersion(tc.name)
 		as.Error(err)
 		as.Equal(tc.expectedVersion, resultedVersion)
 	}
